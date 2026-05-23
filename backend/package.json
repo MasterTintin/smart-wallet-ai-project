@@ -1,0 +1,30 @@
+{
+  "name": "smart-wallet-ai-backend",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Backend for Smart Wallet AI Project",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prisma/client": "^6.19.3",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "prisma": "^6.19.3",
+    "tsx": "^4.22.3"
+  },
+  "dependencies": {
+    "@google/genai": "^2.6.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
