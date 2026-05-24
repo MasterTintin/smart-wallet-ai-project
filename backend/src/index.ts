@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+
+import authRoutes from "./routes/auth.js";
 import transactionRoutes from "./routes/transaction.js";
 import aiRoutes from "./routes/ai.js";
 
@@ -14,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: true,
+    origin: "http://localhost:3000", // ✨ ล็อกเป้าให้เข้ากับหน้าบ้านชัวร์ๆ
     credentials: true
   })
 );
@@ -25,11 +27,12 @@ app.get("/", (req, res) => {
   res.json({ message: "Smart Wallet AI Backend API is running! 🚀" });
 });
 
-// เปิดเส้นทางของข้อมูล Transactions และ AI ให้หน้าบ้านยิงเข้ามา
+// 🎯 2. เปิดเส้นทางท่อส่งข้อมูลให้ครบถ้วน (ห้ามลืม /api/auth เด็ดขาด!)
+app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/ai", aiRoutes);
 
-// API ตัวอย่างดึงข้อมูล Users (เก็บไว้สอยข้อมูลต่อในอนาคต)
+// API ตัวอย่างดึงข้อมูล Users
 app.get("/api/users", async (req, res) => {
   try {
     const users = await prisma.user.findMany();
