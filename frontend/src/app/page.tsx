@@ -12,6 +12,8 @@ import {
   Trash2
 } from "lucide-react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 interface Transaction {
   id: string;
   amount: number;
@@ -52,7 +54,6 @@ export default function Dashboard() {
   const [type, setType] = useState("INCOME");
   const [description, setDescription] = useState("");
 
-  // ดึงข้อมูล Session จากความจำเบราว์เซอร์เมื่อเปิดแอป
   useEffect(() => {
     const savedToken = localStorage.getItem("auth_token");
     const savedUserId = localStorage.getItem("user_id");
@@ -62,7 +63,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // เมื่อไหร่ก็ตามที่มี userId ให้รีเฟรชกระเป๋าตังค์เจ้าของทันที
   useEffect(() => {
     if (userId) {
       fetchData();
@@ -76,7 +76,7 @@ export default function Dashboard() {
     e.preventDefault();
     const endpoint = isRegisterMode ? "register" : "login";
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailInput, password: passwordInput })
@@ -115,7 +115,7 @@ export default function Dashboard() {
     if (!userId) return;
     try {
       const summaryRes = await fetch(
-        `http://localhost:5000/api/transactions/summary?userId=${userId}`
+        `${API_BASE_URL}/api/transactions/summary?userId=${userId}`
       );
       if (summaryRes.ok) {
         const summaryData = await summaryRes.json();
@@ -127,7 +127,7 @@ export default function Dashboard() {
       }
 
       const txRes = await fetch(
-        `http://localhost:5000/api/transactions?userId=${userId}`
+        `${API_BASE_URL}/api/transactions?userId=${userId}`
       );
       if (txRes.ok) {
         const txData = await txRes.json();
@@ -147,7 +147,7 @@ export default function Dashboard() {
       return alert("กรอกข้อมูลให้ครบถ้วน");
 
     try {
-      const res = await fetch("http://localhost:5000/api/transactions", {
+      const res = await fetch(`${API_BASE_URL}/api/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -176,11 +176,12 @@ export default function Dashboard() {
   // =========================
   const askGeminiAI = async () => {
     if (!userId) return;
-    setLoadingAi(true); // 👈 แก้ไขเป็น setLoadingAi เรียบร้อยแล้วครับ!
+    setLoadingAi(true);
     setAiInsight("Gemini AI กำลังวิเคราะห์รูปแบบการใช้เงินของคุณ...");
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/analyze", {
+      // ✅ แก้ไข: เปลี่ยนไปใช้ API_BASE_URL ข้ามคลาวด์สั่งยิงหา AI ยิงวิเคราะห์ข้อมูล
+      const res = await fetch(`${API_BASE_URL}/api/ai/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId })
@@ -211,8 +212,9 @@ export default function Dashboard() {
     if (!confirmClear) return;
 
     try {
+      // ✅ แก้ไข: เปลี่ยนไปใช้ API_BASE_URL ข้ามคลาวด์สั่งลบข้อมูลทั้งหมด
       const res = await fetch(
-        `http://localhost:5000/api/transactions?userId=${userId}`,
+        `${API_BASE_URL}/api/transactions?userId=${userId}`,
         {
           method: "DELETE"
         }
