@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: "*", // เปิดรับหน้าบ้านออนไลน์ของคุณแม่ให้ยิงผ่านสะดวก
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   })
