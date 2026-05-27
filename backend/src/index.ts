@@ -16,7 +16,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // ✨ ล็อกเป้าให้เข้ากับหน้าบ้านชัวร์ๆ
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   })
 );
@@ -27,7 +28,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Smart Wallet AI Backend API is running! 🚀" });
 });
 
-// 🎯 2. เปิดเส้นทางท่อส่งข้อมูลให้ครบถ้วน (ห้ามลืม /api/auth เด็ดขาด!)
+// 🎯 เปิดเส้นทางท่อส่งข้อมูลให้ครบถ้วน
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/ai", aiRoutes);
