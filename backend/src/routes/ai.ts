@@ -45,7 +45,7 @@ router.post("/analyze", async (req, res) => {
       )
       .join("\n");
 
-    // 🔥 ปรับปรุง System Prompt ใหม่: เป็นมิตร สนุก เข้าถึงได้ทุกเพศทุกวัย
+    // ปรับปรุง System Prompt ใหม่: เป็นมิตร เข้าถึงได้ทุกเพศทุกวัย
     const systemPrompt = `
       คุณคือ "ผู้ช่วยวิเคราะห์การเงินอัจฉริยะ" ที่เป็นมิตร อารมณ์ดี และเข้าถึงง่าย มีหน้าที่วิเคราะห์รายรับ-รายจ่ายให้กับผู้ใช้งานคนไทยทุกเพศทุกวัย
       
@@ -68,15 +68,24 @@ router.post("/analyze", async (req, res) => {
       ตอบเป็นภาษาไทย ให้กระชับ ได้ใจความ ไม่อารัมภบทเวิ่นเว้อ
     `;
 
-    // ยิงเรียกใช้โมเดลผ่าน SDK เวอร์ชันล่าสุด
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: systemPrompt
     });
 
-    const aiInsightText =
-      response.text ||
-      "ตอนนี้ผู้ช่วย AI ขอเวลาประมวลผลสักครู่ อย่าลืมวางแผนการเงินอย่างรอบคอบนะครับ";
+    // 🛠️ ป้องกันบั๊ก: ดึงเนื้อหาข้อความออกมาอย่างปลอดภัยสูงสุด รองรับ Getter ของ SDK ใหม่
+    let aiInsightText = "";
+    if (response && typeof response.text === "string") {
+      aiInsightText = response.text;
+    } else if (response && typeof response.text === "function") {
+      aiInsightText = (response as any).text();
+    }
+
+    // หากยังได้ค่าว่างเปล่า ให้ใช้ข้อความ Default
+    if (!aiInsightText.trim()) {
+      aiInsightText =
+        "ผู้ช่วย AI กำลังประมวลผลข้อมูลการลงทุนของคุณอยู่ โปรดลองกดใหม่อีกครั้งนะครับคุณ";
+    }
 
     res.json({
       userId,
@@ -91,11 +100,9 @@ router.post("/analyze", async (req, res) => {
     });
   } catch (error) {
     console.error("🚨 AI Router Error Detail:", error);
-    res
-      .status(500)
-      .json({
-        error: "Failed to connect with Gemini AI. ระบบประมวลผลขัดข้องชั่วคราว"
-      });
+    res.status(500).json({
+      error: "Failed to connect with Gemini AI. ระบบประมวลผลขัดข้องชั่วคราว"
+    });
   }
 });
 
