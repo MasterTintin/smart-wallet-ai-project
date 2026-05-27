@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Transaction } from "@prisma/client"; // 👈 เติม , Transaction เข้ามาตรงนี้
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -93,7 +93,8 @@ router.get("/summary", async (req, res) => {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    transactions.forEach((item) => {
+    // 🛠️ แก้ไขจุดนี้: ใส่ : Transaction กำกับไว้ที่ item ป้องกัน Error บน Render
+    transactions.forEach((item: Transaction) => {
       const amountNum = Number(item.amount);
       if (item.type === "INCOME") {
         totalIncome += amountNum;
